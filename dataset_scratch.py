@@ -7,6 +7,7 @@ import datetime
 print("{}: started model run".format(str(datetime.datetime.now())))
 # Various File Stuff
 CSV_PATH = 'data/vector.csv'
+# CSV_PATH = 'data/vector_full_no_neutral_no_tokens.csv'
 TRAIN_DATA = 'data/train.csv'
 TEST_DATA = 'data/test.csv'
 
@@ -15,8 +16,9 @@ RANDOM_STATE = True # Change this if you want a truly random split between test 
 
 # Various Models Tweaks
 BATCH_SIZE=100
-STEPS=2000
+STEPS=1000
 SHUFFLE_SIZE=1000
+CLASSES=6
 
 '''slightly cumbersome but split out the csv into test and training for a little more visibility'''
 
@@ -74,20 +76,60 @@ def csv_input_fn(csv_path, batch_size):
 # All the inputs are numeric
 feature_columns = [
     tf.feature_column.numeric_column(name)
-    for name in COLUMNS[:-1]]
+#    for name in COLUMNS[:-1]
+    for name in [
+		'TEXT_NEGATIVE',
+		'TEXT_MIXED',
+		'TEXT_POSITIVE',
+		'TEXT_NEUTRAL',
+#		'SUMMARY_NEGATIVE',
+#		'SUMMARY_MIXED',
+#		'SUMMARY_POSITIVE',
+#		'SUMMARY_NEUTRAL',		
+	]
+]
 
 # Build the estimator
-est = tf.estimator.LinearClassifier(feature_columns,
-                                    n_classes=10)
+est = tf.estimator.LinearClassifier(
+	feature_columns=feature_columns,
+	weight_column='UPVOTE',
+    n_classes=CLASSES,
+)
 
+'''
+est = tf.estimator.DNNClassifier(	
+	feature_columns=feature_columns,
+	weight_column='UPVOTE',
+    n_classes=10,
+	hidden_units=[1024, 512, 256]    ,
+
+)
+'''
+'''
+estimator = tf.estimator.DNNLinearCombinedClassifier(
+    # wide settings
+    linear_feature_columns=feature_columns,
+    # deep settings
+    dnn_feature_columns=[
+        feature_columns],
+    dnn_hidden_units=[1024, 512, 256],
+
+    # warm-start settings
+)
+
+estimator = tf.estimator.BaselineClassifier(
+    n_classes=CLASSES
+)
+'''
 
 # Train the estimator
-print("Training Estimator...")
+print("{}: Training Estimator...".format(str(datetime.datetime.now())))
 est.train(
     steps=STEPS,
-    input_fn=lambda : csv_input_fn(TRAIN_DATA, BATCH_SIZE))
+    input_fn=lambda : csv_input_fn(TRAIN_DATA, BATCH_SIZE)
+)
 
-print("Evaluating Model...")
+print("{}: Evaluating Model...".format(str(datetime.datetime.now())))
 answer = est.evaluate(
 	input_fn=lambda : csv_input_fn(TEST_DATA, BATCH_SIZE),
 	steps=STEPS
@@ -98,18 +140,5 @@ print("RESULTS:")
 print("--------")
 print(answer)
 
-'''
-train_spec = tf.estimator.TrainSpec(
-	input_fn=lambda : csv_input_fn(TRAIN_DATA, BATCH_SIZE),
-	max_steps=STEPS
-)
-eval_spec = tf.estimator.EvalSpec(
-	input_fn=lambda : csv_input_fn(TEST_DATA, BATCH_SIZE)
-)
-tf.estimator.train_and_evaluate(
-	est, 
-	train_spec, 
-	eval_spec
-)
-'''
+
 print("{}: Completed model run.".format(str(datetime.datetime.now())))
