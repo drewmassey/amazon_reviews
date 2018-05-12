@@ -42,28 +42,23 @@ Since this model was built in just a few days, there are some considerable sharp
 We have some sense of the sampling problem through a few simple analysis steps. First of all, ratings in this category tend to to cluster in the 4s and 5s:
 
 ####Counts of ratings in the raw data
-```gzcat data/reviews_Movies_and_TV_5.json.gz | jq .overall | sort | uniq -c
 ```
+gzcat data/reviews_Movies_and_TV_5.json.gz | jq .overall | sort | uniq -c
 1: 104219 	(6.14%)
-
 2: 102410 	(6.03%)
-
 3: 201302 	(11.86%)
-
 4: 382994 	(22.56%)
-
 5: 906608 	(53.41%)
+```
 
 #### Counts of ratings in the data sampled from AWS Comprehend
+```
 1: 8342 	(4.74%)
-
 2: 7973 	(4.53%)
-
 3: 16044 	(9.12%)
-
 4: 36582 	(20.79%)
-
 5: 104704 	(59.50%)
+```
 
 ## Technical Implementation
 
