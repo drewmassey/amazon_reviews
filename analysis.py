@@ -6,19 +6,26 @@ from collections import Counter, defaultdict
 import pandas as pd
 import numpy 
 
+"""
+Command line script for various data preparation and scrubbing tasks.
+
+I didn't comment this in a whole lot of detail.
+"""
+
+
+# Locations of various artifacts
 data_remote = 'http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/reviews_Movies_and_TV_5.json.gz'
 data_local = 'data/reviews_Movies_and_TV_5.json.gz'
 data_enriched = 'data/enriched.json'
 data_vectorized = 'data/vector.json'
 data_vectorized_csv = 'data/vector_full.csv'
 data_text_summary_delta = 'data/text_summary_delta.csv'
-language_code = 'en'
 pickles = {
 	'text_token_count': 'data/text_token_count.pickle',
 	'summary_token_count': 'data/summary_token_count.pickle'
 }
 
-
+language_code = 'en'
 comprehend = boto3.client('comprehend')
 
 # Specify the keys in the vector for easy lookup.
@@ -38,16 +45,9 @@ vector_map = [
 	'rating'
 ]
 
-'''
-@click.command()
-def cli():
-    """Example script."""
-    click.echo('Hello World!')
-'''
-
 @click.group()
 def cli():
-    pass
+    pass # No default command
 
 @cli.command()
 def extract():
@@ -59,7 +59,7 @@ def extract():
 def enrich():
 
 	"""Runs sentiment analysis on data set"""
-	# click.echo('Running sentiment analysis (this costs money don\'t do it too much)...')
+	click.echo('Running sentiment analysis (this costs money don\'t do it too much)...')
 	g = gzip.open(data_local, 'r')
 	# This could run faster if you  batched up the requests
 	for l in g:
@@ -108,13 +108,13 @@ def headers():
 		'SUMMARY_MIXED',
 		'SUMMARY_POSITIVE',
 		'SUMMARY_NEUTRAL',		
-# 		'SUMMARY_TOKEN',
+#		'SUMMARY_TOKEN',
 		'RATING',
 	]
 
 @cli.command()
 def transform():
-	"""Convert enriched data to a vector for analysis"""
+	"""Convert enriched data to a JSON file for analysis"""
 	with open(data_vectorized, 'w') as of:
 		with open(data_enriched, 'r') as f:
 			for l in f:
@@ -127,7 +127,7 @@ def transform():
 
 @cli.command()
 def transform2csv():
-	"""Convert enriched data to a vector for analysis"""
+	"""Convert enriched data to a CSV for analysis"""
 	with open(data_vectorized_csv, 'w') as of:
 		of.write(','.join(headers()))
 		of.write("\n")
@@ -175,17 +175,16 @@ def token_counts():
 	for k in ['TEXT','SUMMARY']:
 		for i in range(0,5):
 			d[k][i] = [0, 0, 0, 0, 0, 0]
-#	print(d)
 
 	for k,v in out.items():
-#		print(k,v)
 		frame, row, col = k.split('-')
 		d[frame][rows.index(row)][int(float(col))] = v
-#	print(out)
+
 	text_df = pd.DataFrame(d['TEXT'], index=rows)
-	summary_df = pd.DataFrame(d['SUMMARY'], index=rows)
 	text_df = text_df.drop([0], axis=1)
 	text_df = text_df.drop(['NULL'], axis=0)
+
+	summary_df = pd.DataFrame(d['SUMMARY'], index=rows)
 	summary_df = summary_df.drop([0], axis=1)
 	summary_df = summary_df.drop(['NULL'], axis=0)	
 
@@ -199,7 +198,7 @@ def token_counts():
 
 @cli.command()
 def sample_breakdown():
-	"""Get histogram of sampled data"""
+	"""Get histogram of sampled data that was passed through AWS Comprehend"""
 	counts = []
 	with open(data_vectorized, 'r') as f:
 			for l in f:
@@ -208,11 +207,9 @@ def sample_breakdown():
 	b = Counter(counts)
 	print(b)
 
-
-
 @cli.command()
 def text_summary_delta():
-	"""Get covariance of text versus summary scores"""
+	"""Calculate covariance of text versus summary scores"""
 	with open(data_text_summary_delta,'w') as of:
 		with open(data_vectorized, 'r') as f:
 				for l in f:

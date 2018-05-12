@@ -7,20 +7,24 @@ import datetime
 print("{}: started model run".format(str(datetime.datetime.now())))
 # Various File Stuff
 CSV_PATH = 'data/vector.csv'
+# This file shows the improvement bump when neutral reviews are removed from the corpus.
 # CSV_PATH = 'data/vector_full_no_neutral_no_tokens.csv'
 TRAIN_DATA = 'data/train.csv'
 TEST_DATA = 'data/test.csv'
 
-TEST_SIZE = 0.20 # Percentage of the data to test vs. train on
-RANDOM_STATE = True # Change this if you want a truly random split between test and training.
+TEST_SIZE = 0.33 # Percentage of the data to test vs. train on
+RANDOM_STATE = True # Change this if you want a truly random split between test and training. Setting it to an integer will result in the same split each time.
 
 # Various Models Tweaks
+# No significant variation in metrics was observed by changing these values.
 BATCH_SIZE=100
 STEPS=1000
 SHUFFLE_SIZE=1000
 CLASSES=6
 
-'''slightly cumbersome but split out the csv into test and training for a little more visibility'''
+'''
+slightly cumbersome but split out the csv into test and training for a little more visibility into the created artifacts.
+'''
 
 print("Splitting master data set...")
 dataset = np.loadtxt(CSV_PATH, delimiter=",", skiprows=1)
@@ -28,8 +32,6 @@ testing_data, training_data = train_test_split(dataset, test_size=TEST_SIZE, ran
 formatter = "%1.0f,%1.0f,%1.8f,%1.8f,%1.8f,%1.8f,%1.8f,%1.8f,%1.8f,%1.8f,%1.0f"
 np.savetxt(TRAIN_DATA, training_data, fmt=formatter, delimiter=",")
 np.savetxt(TEST_DATA, testing_data, fmt=formatter, delimiter=",")
-
-
 
 # Metadata describing the text columns
 COLUMNS = analysis.headers()
@@ -46,6 +48,8 @@ FIELD_DEFAULTS = [
 	[0.0], 
 	[0],
 ]
+
+# (Some of this is based on existing guidelines from the tensorflow web site)
 def _parse_line(line):
     # Decode the line into its fields
     fields = tf.decode_csv(line, FIELD_DEFAULTS)
@@ -71,21 +75,19 @@ def csv_input_fn(csv_path, batch_size):
     # Return the dataset.
     return dataset
 
-
-
-# All the inputs are numeric
 feature_columns = [
     tf.feature_column.numeric_column(name)
-#    for name in COLUMNS[:-1]
+	#    for name in COLUMNS[:-1]
+	# We explicitly name columns so that we can be a little looser with the upstream data pipeline.
     for name in [
 		'TEXT_NEGATIVE',
 		'TEXT_MIXED',
 		'TEXT_POSITIVE',
 		'TEXT_NEUTRAL',
-#		'SUMMARY_NEGATIVE',
-#		'SUMMARY_MIXED',
-#		'SUMMARY_POSITIVE',
-#		'SUMMARY_NEUTRAL',		
+		'SUMMARY_NEGATIVE',
+		'SUMMARY_MIXED',
+		'SUMMARY_POSITIVE',
+		'SUMMARY_NEUTRAL',		
 	]
 ]
 
@@ -96,6 +98,7 @@ est = tf.estimator.LinearClassifier(
     n_classes=CLASSES,
 )
 
+# Some other options for classifiers
 '''
 est = tf.estimator.DNNClassifier(	
 	feature_columns=feature_columns,
@@ -113,8 +116,6 @@ estimator = tf.estimator.DNNLinearCombinedClassifier(
     dnn_feature_columns=[
         feature_columns],
     dnn_hidden_units=[1024, 512, 256],
-
-    # warm-start settings
 )
 
 estimator = tf.estimator.BaselineClassifier(
@@ -130,7 +131,7 @@ est.train(
 )
 
 print("{}: Evaluating Model...".format(str(datetime.datetime.now())))
-answer = est.evaluate(
+metrics = est.evaluate(
 	input_fn=lambda : csv_input_fn(TEST_DATA, BATCH_SIZE),
 	steps=STEPS
 )
@@ -138,7 +139,7 @@ answer = est.evaluate(
 print("--------")
 print("RESULTS:")
 print("--------")
-print(answer)
+print(metrics)
 
 
 print("{}: Completed model run.".format(str(datetime.datetime.now())))
