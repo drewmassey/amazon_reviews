@@ -8,7 +8,7 @@ This task is to _build a model to rate the products in the list using the review
 
 ## TL;DR
 
-The approach in this repository uses a Linear Classifier in combination with a external sentiment analysis service to quickly produce a model with ~64% on sample data and ~69% accuracy on filtered data. Other classification options were explored without a significant change in performance.
+The approach in this repository uses a Linear Classifier in combination with a external sentiment analysis service to quickly produce a model with ~64% accuracy on sample data and ~69% accuracy on filtered data. Other classification options were explored without a significant change in performance.
 
 A literature review of existing solutions to this problem found that some authors were able to achieve accuracies as high as 78% for a similar problem by changing the labels from 1-5 to a three target space of high / medium / low. Other similar solutions expressed their accuracy somewhat differently, with one regression-driven approach achieving a MSE of 1.112 and a group of three student projects having a mean average error of 0.494-0.511.
 
@@ -16,7 +16,7 @@ A literature review of existing solutions to this problem found that some author
 
 ### Methodology & Thought Process.
 
-The approach that I have taken is to enrich the existing corpus of data by using AWS Comprehend (https://aws.amazon.com/comprehend/), a service that provides sentiment analysis for English language text. This allows us to quickly express each review as a set of numerical values. As with other AWS sentiment analysis products, Comprehend provides a series of values for general categories: "Positive", "Neutral", "Negative", and "Mixed," as well as a token indicating the prevailing sentiment for any given text.
+The approach that I have taken is to enrich the existing corpus of data by using AWS Comprehend (https://aws.amazon.com/comprehend/), a service that provides sentiment analysis for English language text. This allows us to quickly express each review as a set of numerical values. As with other AWS sentiment analysis products, Comprehend provides a series of decimal values for general categories: "Positive", "Neutral", "Negative", and "Mixed," as well as a token indicating the prevailing sentiment for any given text.
 
 ### Preliminary analysis  
 I conducted some preliminary analysis on the raw data to see if there were some quick wins:
@@ -41,7 +41,7 @@ Since this model was built in just a few days, there are some considerable sharp
 
 We have some sense of the sampling problem through a few simple analysis steps. First of all, ratings in this category tend to to cluster in the 4s and 5s:
 
-####Counts of ratings in the raw data
+#### Counts of ratings in the raw data
 ```
 gzcat data/reviews_Movies_and_TV_5.json.gz | jq .overall | sort | uniq -c
 1: 104219 	(6.14%)
@@ -72,6 +72,10 @@ pip install -r requirements.txt
 # This last line will install the setuptools for the click python framework to make it a little more usable.
 pip install --editable .
 ```
+
+### Getting the data
+
+### Running the model
 
 ### Further Reading
 
