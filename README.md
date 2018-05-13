@@ -96,17 +96,19 @@ From there we boil it down to a csv with this command:
 analysis transform2csv --input_file <filename> --output_file <filename>
 ```
 
-(You may get some errors on about JSON not parsing correctly).
+(You may get some errors about JSON not parsing correctly for some lines, this is a known issue).
 
 There are some other helper functions in the `analysis` app that aren't discussed here since you don't need them to run the model; the output of `analysis transform2csv` is the input to the model. Note that you should save the output file to `data/vector.csv`
 
 ### Running the model
 
+In the same directory as the repo run the following command:
+
 ```
 python trainer.py
 ```
 
-This command  assumes your input file is in `data/vector.csv` ; there are some other configurable options at the top of the script.
+This command assumes your input file is in `data/vector.csv` ; there are some other configurable options at the top of the script.
 
 ### Further Reading
 
