@@ -75,7 +75,38 @@ pip install --editable .
 
 ### Getting the data
 
+A copy of the original data is here:
+https://s3.amazonaws.com/massey.amazon.product/reviews_Movies_and_TV_5.json.gz
+
+The data manipulation script for this repo is written in click (http://click.pocoo.org). As such, you should be able to enrich the above data set on your own with just a few steps:
+
+- Make sure that you have an AWS Account configured in your terminal and specify aws_access_key_id, aws_secret_access_key, and region (or use other authentication mechanisms such that you can connect to AWS Comprehend).
+
+```
+analysis enrich --data_source <local_path_of_amazon_data>
+```
+
+This will print the enriched data to STDOUT for redirection. To save yourself time and money, you can download a slice of the enriched data here:
+
+https://s3.amazonaws.com/massey.amazon.product/enriched.json
+
+From there we boil it down to a csv with this command:
+
+```
+analysis transform2csv --input_file <filename> --output_file <filename>
+```
+
+(You may get some errors on about JSON not parsing correctly).
+
+There are some other helper functions in the `analysis` app that aren't discussed here since you don't need them to run the model; the output of `analysis transform2csv` is the input to the model. Note that you should save the output file to `data/vector.csv`
+
 ### Running the model
+
+```
+python trainer.py
+```
+
+This command  assumes your input file is in `data/vector.csv` ; there are some other configurable options at the top of the script.
 
 ### Further Reading
 

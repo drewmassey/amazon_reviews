@@ -56,11 +56,12 @@ def extract():
 	click.echo('# curl {} > {} '.format(data_remote, data_local))
 
 @cli.command()
-def enrich():
+@click.option('--data_source', default=data_local)
+def enrich(data_source):
 
 	"""Runs sentiment analysis on data set"""
 	click.echo('Running sentiment analysis (this costs money don\'t do it too much)...')
-	g = gzip.open(data_local, 'r')
+	g = gzip.open(data_source, 'r')
 	# This could run faster if you  batched up the requests
 	for l in g:
 		try: 
@@ -126,12 +127,14 @@ def transform():
 					click.echo("ERROR: {}".format(e))
 
 @cli.command()
-def transform2csv():
+@click.option('--input_file')
+@click.option('--output_file')
+def transform2csv(input_file, output_file):
 	"""Convert enriched data to a CSV for analysis"""
-	with open(data_vectorized_csv, 'w') as of:
+	with open(output_file, 'w') as of:
 		of.write(','.join(headers()))
 		of.write("\n")
-		with open(data_enriched, 'r') as f:
+		with open(input_file, 'r') as f:
 			for l in f:
 				try:
 					j = json.loads(l)
