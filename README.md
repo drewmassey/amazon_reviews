@@ -2,7 +2,7 @@
 Predict product ratings on Amazon using customer reviews.
 
 ## The challenge
-This repo draws on a [corpus of ~1.7 million reviews from Amazon for Movies and TV shows] (http://jmcauley.ucsd.edu/data/amazon/) that includes the reviewer id, the product id, the number of upvotes and downvotes for that particular review, the title and body of the review (called 'summary' and 'text' respectively in the data), and then the overall rating, which ranges from 1 to 5.
+This repo draws on a corpus of ~1.7 million reviews from Amazon for Movies and TV shows (http://jmcauley.ucsd.edu/data/amazon/) that includes the reviewer id, the product id, the number of upvotes and downvotes for that particular review, the title and body of the review (called 'summary' and 'text' respectively in the data), and then the overall rating, which ranges from 1 to 5.
 
 This task is to _build a model to rate the products in the list using the review._
 
@@ -16,7 +16,7 @@ A literature review of existing solutions to this problem found that some author
 
 ### Methodology & Thought Process.
 
-The approach that I have taken is to enrich the existing corpus of data by using [AWS Comprehend] (https://aws.amazon.com/comprehend/), a service that provides sentiment analysis for English language text. This allows us to quickly express each review as a set of numerical values. As with other AWS sentiment analysis products, Comprehend provides a series of values for general categories: "Positive", "Neutral", "Negative", and "Mixed," as well as a token indicating the prevailing sentiment for any given text.
+The approach that I have taken is to enrich the existing corpus of data by using AWS Comprehend (https://aws.amazon.com/comprehend/), a service that provides sentiment analysis for English language text. This allows us to quickly express each review as a set of numerical values. As with other AWS sentiment analysis products, Comprehend provides a series of values for general categories: "Positive", "Neutral", "Negative", and "Mixed," as well as a token indicating the prevailing sentiment for any given text.
 
 ### Preliminary analysis  
 I conducted some preliminary analysis on the raw data to see if there were some quick wins:
@@ -75,8 +75,8 @@ pip install --editable .
 
 ### Further Reading
 
-[Peter Brydon and Kevin Groyake, _Amazon Rating Prediction_] (https://pdfs.semanticscholar.org/b71b/fe0fbe009991dc52ac5b03b75b8b44be5aac.pdf)
+Peter Brydon and Kevin Groyake, _Amazon Rating Prediction_ (https://pdfs.semanticscholar.org/b71b/fe0fbe009991dc52ac5b03b75b8b44be5aac.pdf)
 
-[Josh Bencina, _Amazon Review Python Notebook_] (https://gist.github.com/jbencina/03b2673a6fc27e2717650686b379eeca)
+Josh Bencina, _Amazon Review Python Notebook_ (https://gist.github.com/jbencina/03b2673a6fc27e2717650686b379eeca)
 
-[Amazon Review Raters Production Competition] (https://www.kaggle.com/c/ugentml16-3/leaderboard)
+Amazon Review Raters Production Competition (https://www.kaggle.com/c/ugentml16-3/leaderboard)
