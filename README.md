@@ -4,13 +4,13 @@ Predict product ratings on Amazon using customer reviews.
 ## The challenge
 This repo draws on a corpus of ~1.7 million reviews from Amazon for Movies and TV shows (http://jmcauley.ucsd.edu/data/amazon/) that includes the reviewer id, the product id, the number of upvotes and downvotes for that particular review, the title and body of the review (called 'summary' and 'text' respectively in the data), and then the overall rating, which ranges from 1 to 5.
 
-This task is to _build a model to rate the products in the list using the review._
+This task is to build a model to rate the products in the list using the reviews.
 
 ## TL;DR
 
 The approach in this repository uses a Linear Classifier in combination with a external sentiment analysis service to quickly produce a model with ~64% accuracy on sample data and ~69% accuracy on filtered data. Other classification options were explored without a significant change in performance.
 
-A literature review of existing solutions to this problem found that some authors were able to achieve accuracies as high as 78% for a similar problem by changing the labels from 1-5 to a three target space of high / medium / low. Other similar solutions expressed their accuracy somewhat differently, with one regression-driven approach achieving a MSE of 1.112 and a group of three student projects having a mean average error of 0.494-0.511.
+A short literature review of existing solutions to this problem found that some authors were able to achieve accuracies as high as 78% for a similar problem by changing the labels from 1-5 to a three target space of high / medium / low. Other similar solutions expressed their accuracy somewhat differently, with one regression-driven approach achieving a MSE of 1.112 and a group of three student projects having a mean average error of 0.494-0.511.
 
 ## Narrative
 
@@ -28,14 +28,14 @@ I conducted some preliminary analysis on the raw data to see if there were some 
 
 - How frequently to title and body return similar sentiments? _A correlation analysis did not indicate this was a promising way to do a dimensional reduction_. See the discussion in the Jupyter notebook in this repo.
 
-- How should upvotes and downvotes weigh the prediction model? _This question was not exhaustively explored but the model performed comparable with or without weighting upvoted reviews more heavily or by excluding reviews without votes._
+- How should upvotes and downvotes weigh the prediction model? _This question was not exhaustively explored but the model performed roughly the same with or without weighting upvoted reviews more heavily or by excluding reviews without votes._
 
 
 ### Assumptions & Other Considerations
 Since this model was built in just a few days, there are some considerable sharp edges. At a minimum here are obstacles and further issues that would need to be addressed before applying this model to any business problem:
 
-- _Narrow Data Model_. Probably the most obvious limitation of this solution is that it doesn't actually look at the product, or who is actually writing, in an effort to predict the rating. So we don't have any insight as to whether a particular person, for example, tends towards enthusiasm or negativity. Similarly, we can't weight our model based on the rating performance of other similar products In a real world system we would definitely want to at least contemplate such data sources.
-- _The Gospel of AWS_. We haven't done serious analysis of whether `AWS Comprehend` is enriching our data the way we would expect, we kind of take their sentiment analysis for granted. Further analysis would be required to determine whether this was a cost-effective approach compared to building a model in house.
+- _Narrow Data Model_. Probably the most obvious limitation of this solution is that it doesn't actually look at the product, or who is actually writing, in an effort to predict the rating. So we don't have any insight as to whether a particular person, for example, tends towards enthusiasm or negativity. Similarly, we can't weight our model based on the rating performance of other similar products. In a real world system we would definitely want to at least contemplate such data sources.
+- _The Gospel of AWS_. Since we haven't done an analysis of whether `AWS Comprehend` is enriching our data the way we would expect, we kind of take their sentiment analysis for granted. Further analysis would be required to determine whether this was a cost-effective approach compared to building a model in house.
 - _Cost_. Because this relies on an external pay-as-you-go service there was a cost associated with building this model.
 - _Sampling_. In order to control cost, this analysis was conducted on 173,645 records that were passed through the sentiment analysis service. A full analysis of the entire data set would reveal a different set; moreover in the interest of time and cost savings we just read the top of the original data file; even at a 10% sample a better approach would be to shuffle and randomly select a larger percentage of the original data.
 
