@@ -1,5 +1,5 @@
 # Amazon Reviews
-Predict product ratings on Amazon using customer reviews.
+This is a short little challenge I did a year or so ago about predicting product ratings on Amazon using customer reviews.
 
 ## The challenge
 This repo draws on a corpus of ~1.7 million reviews from Amazon for Movies and TV shows (http://jmcauley.ucsd.edu/data/amazon/) that includes the reviewer id, the product id, the number of upvotes and downvotes for that particular review, the title and body of the review (called 'summary' and 'text' respectively in the data), and then the overall rating, which ranges from 1 to 5.
