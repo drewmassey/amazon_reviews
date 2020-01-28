@@ -6,4 +6,4 @@ pandas==0.19.2
 boto3==1.4.7
 click==6.7
 botocore==1.10.19
-tensorflow==1.8.0
+tensorflow==1.15.2
